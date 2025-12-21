@@ -5,3 +5,6 @@ Hello
 My personal rant platform
 
 im a ducky duck 
+
+i know what im doing woohoo
+yolo
