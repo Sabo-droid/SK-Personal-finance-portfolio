@@ -1,3 +1,4 @@
+
 # Copilot prompt:
 # Write Python code using pandas that:
 # - loads a CSV file called data/transactions.csv
@@ -7,20 +8,54 @@
 import pandas as pd
 from datetime import datetime
 
-# Load the CSV file with date parsing
-df = pd.read_csv('../data/transactions.csv', parse_dates=['date'])
-
-# Required columns
-required_columns = ['date', 'category', 'amount']
-
-# Check if all required columns are present
-missing_columns = [col for col in required_columns if col not in df.columns]
-if missing_columns:
-    raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
+# Interactive file input
+print("--- Personal Finance Analyzer ---")
+try:
+    file_path = input("Enter the path to your transactions CSV file (e.g., '../data/transactions.csv'): ")
+    
+    # Load the CSV file (assume headers are present)
+    df = pd.read_csv(file_path)
+    
+    # Default required columns
+    required_columns = ['date', 'category', 'amount']
+    column_mapping = {}
+    
+    # Check for missing columns and prompt for alternatives
+    for col in required_columns:
+        if col not in df.columns:
+            alt_col = input(f"Column '{col}' not found. Enter the actual column name (or press Enter to skip): ")
+            if alt_col and alt_col in df.columns:
+                column_mapping[col] = alt_col
+            else:
+                raise ValueError(f"Required column '{col}' is missing and no valid alternative provided.")
+    
+    # Rename columns if alternatives were provided
+    if column_mapping:
+        df = df.rename(columns=column_mapping)
+    
+    # Now parse date and validate
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    if df['date'].isnull().any():
+        raise ValueError("Invalid date values found. Ensure dates are in a parseable format.")
+    
+    # Validate 'amount' as numeric
+    df['amount'] = pd.to_numeric(df['amount'], errors='coerce')
+    if df['amount'].isnull().any():
+        raise ValueError("Invalid 'amount' values found. Ensure all amounts are numeric.")
+    
+    print("Data loaded successfully!")
+    print(df.head())
+    
+except FileNotFoundError:
+    print("Error: File not found. Please check the path and try again.")
+except ValueError as e:
+    print(f"Error: {e}")
+except Exception as e:
+    print(f"Unexpected error: {e}")
 
 # The dataframe is now loaded and validated
-print("Data loaded successfully!")
-print(df.head())
+
+
 
 
 
@@ -52,20 +87,67 @@ def calculate_monthly_cashflow(df):
     
     return result
 
+def project_future_cashflow(monthly_cashflow, months_ahead, required_savings):
+    """
+    Projects future monthly cash flow by adding savings as expense.
+    
+    Args:
+        monthly_cashflow: Historical DataFrame
+        months_ahead: Number of months to project
+        required_savings: Monthly savings amount to add as expense
+    
+    Returns:
+        DataFrame with projected months
+    """
+    if monthly_cashflow.empty:
+        return pd.DataFrame()
+    
+    # Use current date and average values as base for projection
+    current_month = pd.to_datetime(datetime.now()).strftime('%Y-%m')
+    avg_income = monthly_cashflow['income'].mean()
+    avg_expenses = monthly_cashflow['expenses'].mean()
+    avg_net = monthly_cashflow['net_cashflow'].mean()
+    
+    projections = []
+    
+    for i in range(1, months_ahead + 1):
+        projected_date = pd.to_datetime(current_month) + pd.offsets.MonthEnd(i)
+        projected_month = projected_date.strftime('%Y-%m')
+        projected = {
+            'month': projected_month,
+            'income': avg_income,
+            'expenses': avg_expenses + required_savings,
+            'net_cashflow': avg_income - (avg_expenses + required_savings)
+        }
+        projections.append(projected)
+    
+    return pd.DataFrame(projections)
+
 # Calculate monthly cash flow
 monthly_cashflow = calculate_monthly_cashflow(df)
 print("\nMonthly Cash Flow Summary:")
 print(monthly_cashflow)
 
+def calculate_total_savings(df):
+    """
+    Calculates total savings as the cumulative sum of net cash flow.
+    Assumes savings accumulates from positive net cash flows.
+    
+    Args:
+        df: DataFrame with 'amount' column
+    
+    Returns:
+        Total savings amount
+    """
+    # Calculate net cash flow cumulatively
+    df_sorted = df.sort_values('date')
+    df_sorted['cumulative_net'] = df_sorted['amount'].cumsum()
+    # Savings is the positive cumulative net (or 0 if negative)
+    total_savings = max(0, df_sorted['cumulative_net'].iloc[-1])
+    return total_savings
 
-
-
-# Copilot prompt:
-# Add a function that:
-# - calculates average monthly expenses
-# - computes emergency fund runway = savings / monthly expenses
-# - returns number of months the user can survive without income
-
+# Calculate total savings from data
+total_savings = calculate_total_savings(df)
 
 def calculate_emergency_runway(monthly_cashflow, savings):
     """
@@ -86,10 +168,9 @@ def calculate_emergency_runway(monthly_cashflow, savings):
     runway_months = savings / avg_monthly_expenses
     return runway_months
 
-# Example usage with placeholder savings
-savings = 5000  # Replace with actual savings amount
-runway = calculate_emergency_runway(monthly_cashflow, savings)
-print(f"\nEmergency Fund Runway: {runway:.1f} months (based on ${savings} savings and average monthly expenses of ${monthly_cashflow['expenses'].mean():.2f})")
+# Update emergency runway to use calculated savings
+runway = calculate_emergency_runway(monthly_cashflow, total_savings)
+print(f"\nEmergency Fund Runway: {runway:.1f} months (based on ${total_savings:.2f} savings from data and average monthly expenses of ${monthly_cashflow['expenses'].mean():.2f})")
 
 
 
@@ -129,10 +210,8 @@ def plan_savings_goal(goal_amount, target_date_str, monthly_cashflow):
     avg_net_cashflow = monthly_cashflow['net_cashflow'].mean()
     achievable = required_monthly_savings <= avg_net_cashflow
     
-    # Integrate as new expense category in the cash flow model
-    updated_cashflow = monthly_cashflow.copy()
-    updated_cashflow['expenses'] += required_monthly_savings  # Add savings as expense
-    updated_cashflow['net_cashflow'] = updated_cashflow['income'] - updated_cashflow['expenses']
+    # Project future cash flow with savings as expense
+    updated_cashflow = project_future_cashflow(monthly_cashflow, int(months_to_target), required_monthly_savings)
     
     return {
         'required_monthly_savings': required_monthly_savings,
