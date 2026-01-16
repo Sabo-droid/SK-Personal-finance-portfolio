@@ -144,13 +144,13 @@ def calculate_monthly_cashflow(df):
     
     return result
 
-def project_future_cashflow(monthly_cashflow, months_ahead, required_savings):
+def project_future_cashflow(monthly_cashflow, months_ahead, required_savings=0):
     """
     Projects future monthly cash flow by adding savings as expense.
     
     Args:
         monthly_cashflow: Historical DataFrame
-        months_ahead: Number of months to project
+        months_ahead: Number of months to project (will be converted to int)
         required_savings: Monthly savings amount to add as expense
     
     Returns:
@@ -159,22 +159,27 @@ def project_future_cashflow(monthly_cashflow, months_ahead, required_savings):
     if monthly_cashflow.empty:
         return pd.DataFrame()
     
-    # Use current date and average values as base for projection
-    current_month = pd.to_datetime(datetime.now()).strftime('%Y-%m')
+    current_date = pd.to_datetime(datetime.now())
     avg_income = monthly_cashflow['income'].mean()
     avg_expenses = monthly_cashflow['expenses'].mean()
-    avg_net = monthly_cashflow['net_cashflow'].mean()
+    months_to_project = int(months_ahead)
     
     projections = []
+    cumulative = 0
     
-    for i in range(1, months_ahead + 1):
-        projected_date = pd.to_datetime(current_month) + pd.offsets.MonthEnd(i)
-        projected_month = projected_date.strftime('%Y-%m')
+    for i in range(1, months_to_project + 1):
+        future_date = current_date + pd.DateOffset(months=i)
+        projected_month = future_date.strftime('%Y-%m')
+        adjusted_expenses = avg_expenses + required_savings
+        net = avg_income - adjusted_expenses
+        cumulative += net
+        
         projected = {
             'month': projected_month,
             'income': avg_income,
-            'expenses': avg_expenses + required_savings,
-            'net_cashflow': avg_income - (avg_expenses + required_savings)
+            'expenses': adjusted_expenses,
+            'net_cashflow': net,
+            'cumulative_savings': cumulative
         }
         projections.append(projected)
     
@@ -182,8 +187,6 @@ def project_future_cashflow(monthly_cashflow, months_ahead, required_savings):
 
 # Calculate monthly cash flow
 monthly_cashflow = calculate_monthly_cashflow(df)
-print("\nMonthly Cash Flow Summary:")
-print(monthly_cashflow)
 
 def calculate_total_savings(df):
     """
@@ -232,7 +235,6 @@ def calculate_emergency_runway(monthly_cashflow, savings):
 
 # Update emergency runway to use calculated savings
 runway = calculate_emergency_runway(monthly_cashflow, total_savings)
-print(f"\nEmergency Fund Runway: {runway:.1f} months (based on ${total_savings:.2f} savings from data and average monthly expenses of ${monthly_cashflow['expenses'].mean():.2f})")
 
 
 
@@ -266,7 +268,13 @@ def plan_savings_goal(goal_amount, target_date_str, monthly_cashflow):
     
     months_to_target = days_to_target / 30.44  # Average days per month
     
-    required_monthly_savings = goal_amount / months_to_target
+    # Calculate remaining amount needed (accounting for existing savings)
+    remaining_needed = goal_amount - total_savings
+    
+    if remaining_needed <= 0:
+        required_monthly_savings = 0
+    else:
+        required_monthly_savings = remaining_needed / months_to_target
     
     # Check achievability: can we save this amount given current net cash flow?
     avg_net_cashflow = monthly_cashflow['net_cashflow'].mean()
@@ -362,13 +370,11 @@ def main_menu():
         print("1. Monthly Cash Flow Summary")
         print("2. Total Savings")
         print("3. Emergency Fund Runway")
-        print("4. Savings Goal Planner")
-        print("5. Future Cash Flow Projection (No Changes)")
-        print("6. What-If Scenario Analysis")
-        print("7. Category Spending Breakdown")
+        print("4. Scenario Projection & Analysis")
+        print("5. Category Spending Breakdown")
         print("0. Exit")
         
-        choice = input("\nEnter your choice (0-7): ").strip()
+        choice = input("\nEnter your choice (0-5): ").strip()
         
         if choice == '1':
             print("\n--- Monthly Cash Flow Summary ---")
@@ -385,101 +391,127 @@ def main_menu():
             print(f"Avg Monthly Expenses: ${monthly_cashflow['expenses'].mean():.2f}")
             
         elif choice == '4':
-            print("\n--- Savings Goal Planner ---")
+            print("\n--- Scenario Projection & Analysis ---")
             try:
-                goal_amount = float(input("Enter your savings goal amount: $"))
-                target_date = input("Enter your target date (YYYY-MM-DD): ")
-                
-                savings_plan = plan_savings_goal(goal_amount, target_date, monthly_cashflow)
-                
-                if 'error' in savings_plan:
-                    print(f"Error: {savings_plan['error']}")
+                print("\nChoose a scenario:")
+                print("1. No change")
+                print("2. Change monthly income")
+                print("3. Change monthly expenses")
+                print("4. Change both income and expenses")
+                scenario_choice = input("Enter scenario choice (1-4): ").strip()
+
+                current_date = pd.to_datetime(datetime.now())
+                avg_income = monthly_cashflow['income'].mean()
+                avg_expenses = monthly_cashflow['expenses'].mean()
+
+                # Determine adjusted income/expenses based on scenario (ask change immediately)
+                new_income = avg_income
+                new_expenses = avg_expenses
+
+                if scenario_choice == '1':
+                    scenario_desc = "No change"
+                elif scenario_choice == '2':
+                    change = float(input("Enter income change amount (use + or - as needed, e.g. +500 or -300): $"))
+                    new_income = avg_income + change
+                    scenario_desc = f"Income change: {change:+.2f} (now ${new_income:.2f})"
+                elif scenario_choice == '3':
+                    change = float(input("Enter expense change amount (use + or - as needed, e.g. +200 or -100): $"))
+                    new_expenses = avg_expenses + change
+                    scenario_desc = f"Expense change: {change:+.2f} (now ${new_expenses:.2f})"
+                elif scenario_choice == '4':
+                    inc = float(input("Enter income change (use + or - as needed): $"))
+                    exp = float(input("Enter expense change (use + or - as needed): $"))
+                    new_income = avg_income + inc
+                    new_expenses = avg_expenses + exp
+                    scenario_desc = f"Income change: {inc:+.2f}, Expense change: {exp:+.2f} (now ${new_income:.2f}, ${new_expenses:.2f})"
                 else:
-                    print(f"\nSavings Goal Plan:")
+                    print("Invalid scenario choice.")
+                    continue
+
+                # Ask what the user wants to see (after change inputs)
+                print("\nWhat would you like to see?")
+                print("1. Projected cumulative savings after X months")
+                print("2. Check whether a savings goal is achievable")
+                view_choice = input("Enter choice (1-2): ").strip()
+
+                # If user wants cumulative projection
+                if view_choice == '1':
+                    months = int(input("How many months to project? "))
+                    projections = []
+                    for i in range(1, months + 1):
+                        future_date = current_date + pd.DateOffset(months=i)
+                        projected_month = future_date.strftime('%Y-%m')
+                        net = new_income - new_expenses
+                        projections.append({
+                            'month': projected_month,
+                            'income': new_income,
+                            'expenses': new_expenses,
+                            'net_cashflow': net
+                        })
+
+                    projection_df = pd.DataFrame(projections)
+                    projection_df['cumulative_savings'] = projection_df['net_cashflow'].cumsum()
+
+                    baseline_net = avg_income - avg_expenses
+                    baseline_cumulative = baseline_net * months
+                    scenario_cumulative = (new_income - new_expenses) * months
+
+                    print(f"\n--- Scenario: {scenario_desc} ---")
+                    print(projection_df.to_string(index=False))
+                    print(f"\nFinal Cumulative Savings after {months} months: ${projection_df['cumulative_savings'].iloc[-1]:.2f}")
+                    if scenario_choice != '1':
+                        difference = scenario_cumulative - baseline_cumulative
+                        print(f"\nComparison to Baseline:")
+                        print(f"Baseline Final Worth: ${baseline_cumulative:.2f}")
+                        print(f"Scenario Final Worth: ${scenario_cumulative:.2f}")
+                        print(f"Difference: ${difference:.2f} ({(difference/abs(baseline_cumulative)*100) if baseline_cumulative != 0 else 0:.1f}%)")
+
+                # If user wants to check savings goal feasibility
+                elif view_choice == '2':
+                    goal_amount = float(input("Enter savings goal amount: $"))
+                    target_input = input("Enter target date (YYYY-MM-DD) or number of months: ").strip()
+                    # try parse as date first
+                    try:
+                        target_date = pd.to_datetime(target_input)
+                        days_to_target = (target_date - current_date).days
+                        if days_to_target <= 0:
+                            print("Target date is in the past.")
+                            continue
+                        months_to_target = days_to_target / 30.44
+                    except Exception:
+                        # treat as months
+                        months_to_target = float(target_input)
+
+                    remaining_needed = goal_amount - total_savings
+                    if remaining_needed <= 0:
+                        required_monthly = 0.0
+                    else:
+                        required_monthly = remaining_needed / months_to_target
+
+                    projected_monthly_net = new_income - new_expenses
+                    achievable = required_monthly <= projected_monthly_net
+                    surplus = projected_monthly_net - required_monthly
+
+                    print(f"\nSavings Goal Check under scenario: {scenario_desc}")
                     print(f"Goal Amount: ${goal_amount:.2f}")
-                    print(f"Target Date: {target_date}")
-                    print(f"Months to Target: {savings_plan['months_to_target']:.1f}")
-                    print(f"Required Monthly Savings: ${savings_plan['required_monthly_savings']:.2f}")
-                    print(f"Achievable: {'Yes' if savings_plan['achievable'] else 'No'}")
-                    print(f"\nProjected Cash Flow with Savings Goal:")
-                    print(savings_plan['updated_cashflow'])
+                    print(f"Months to Target: {months_to_target:.2f}")
+                    print(f"Remaining Needed (after existing savings of ${total_savings:.2f}): ${remaining_needed:.2f}")
+                    print(f"Required Monthly Savings: ${required_monthly:.2f}")
+                    print(f"Projected Monthly Net Cash Flow under scenario: ${projected_monthly_net:.2f}")
+                    print(f"Achievable: {'Yes' if achievable else 'No'}")
+                    if achievable:
+                        print(f"Surplus per month: ${surplus:.2f}")
+                    else:
+                        print(f"Shortfall per month: ${-surplus:.2f}")
+
+                else:
+                    print("Invalid view choice.")
+                    continue
+
             except ValueError:
                 print("Invalid input. Please enter valid values.")
                 
         elif choice == '5':
-            print("\n--- Future Cash Flow Projection (No Changes) ---")
-            try:
-                months = int(input("How many months to project? "))
-                current_date = pd.to_datetime(datetime.now())
-                avg_income = monthly_cashflow['income'].mean()
-                avg_expenses = monthly_cashflow['expenses'].mean()
-                
-                projections = []
-                cumulative = 0
-                for i in range(1, months + 1):
-                    future_date = current_date + pd.DateOffset(months=i)
-                    projected_month = future_date.strftime('%Y-%m')
-                    net = avg_income - avg_expenses
-                    cumulative += net
-                    
-                    projections.append({
-                        'month': projected_month,
-                        'income': avg_income,
-                        'expenses': avg_expenses,
-                        'net_cashflow': net,
-                        'cumulative_savings': cumulative
-                    })
-                
-                projection_df = pd.DataFrame(projections)
-                print("\nProjected Cash Flow:")
-                print(projection_df.to_string(index=False))
-                print(f"\nFinal Cumulative Savings after {months} months: ${cumulative:.2f}")
-            except ValueError:
-                print("Invalid input. Please enter a number.")
-                
-        elif choice == '6':
-            print("\n--- What-If Scenario Analysis ---")
-            try:
-                months = int(input("How many months to project? "))
-                print("\nScenario Types:")
-                print("1. Decrease Spending")
-                print("2. Increase Savings")
-                print("3. Both (balanced approach)")
-                scenario_choice = input("Choose scenario (1-3): ").strip()
-                
-                scenario_map = {'1': 'decrease_spending', '2': 'increase_savings', '3': 'both'}
-                scenario_type = scenario_map.get(scenario_choice, 'decrease_spending')
-                
-                if scenario_type == 'decrease_spending':
-                    amount = float(input("Enter amount to decrease spending by: $"))
-                    desc = f"Decrease spending by ${amount}"
-                elif scenario_type == 'increase_savings':
-                    amount = float(input("Enter amount to increase savings by: $"))
-                    desc = f"Increase savings by ${amount}"
-                else:
-                    amount = float(input("Enter total amount to adjust (split between income/expenses): $"))
-                    desc = f"Balanced adjustment: +${amount/2} income, -${amount/2} expenses"
-                
-                scenario_cf = run_what_if_scenario(monthly_cashflow, months, scenario_type, amount)
-                
-                # Compare with baseline (no changes)
-                current_date = pd.to_datetime(datetime.now())
-                avg_income = monthly_cashflow['income'].mean()
-                avg_expenses = monthly_cashflow['expenses'].mean()
-                baseline_cumulative = (avg_income - avg_expenses) * months
-                scenario_cumulative = scenario_cf['cumulative_savings'].iloc[-1]
-                difference = scenario_cumulative - baseline_cumulative
-                
-                print(f"\n--- What-If Scenario: {desc} ---")
-                print(scenario_cf.to_string(index=False))
-                print(f"\nComparison:")
-                print(f"Baseline Final Worth (no changes): ${baseline_cumulative:.2f}")
-                print(f"Scenario Final Worth: ${scenario_cumulative:.2f}")
-                print(f"Difference: ${difference:.2f} ({(difference/baseline_cumulative*100) if baseline_cumulative != 0 else 0:.1f}%)")
-            except ValueError:
-                print("Invalid input. Please enter valid values.")
-                
-        elif choice == '7':
             print("\n--- Category Spending Breakdown ---")
             category_breakdown = calculate_category_breakdown(df)
             print(category_breakdown.to_string(index=False))
@@ -491,7 +523,7 @@ def main_menu():
             break
             
         else:
-            print("Invalid choice. Please enter 0-7.")
+            print("Invalid choice. Please enter 0-5.")
 
 # Run main menu
 main_menu()
