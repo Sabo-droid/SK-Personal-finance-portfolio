@@ -1,17 +1,54 @@
 
-# Copilot prompt:
-# Write Python code using pandas that:
-# - loads a CSV file called data/transactions.csv
-# - ensures the date column is parsed as datetime
-# - validates that columns are date, category, amount
-# - raises a clear error if any column is missing
 import pandas as pd
 from datetime import datetime
+import os
+
+# Helper function to create sample transactions CSV if it doesn't exist
+def create_sample_transactions(file_path):
+    """Create a sample transactions CSV file for testing if it doesn't exist."""
+    if os.path.exists(file_path):
+        return
+    
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    
+    sample_data = {
+        'date': [
+            '2025-06-05', '2025-06-12', '2025-06-15', '2025-06-19',
+            '2025-06-26', '2025-06-03', '2025-06-10', '2025-06-17',
+            '2025-06-24', '2025-06-30'
+        ],
+        'category': [
+            'Part-time Job', 'Food', 'Rent', 'Scholarship',
+            'Books', 'Utilities', 'Entertainment', 'Allowance',
+            'Food', 'Clothing'
+        ],
+        'amount': [
+            335.50, -85.40, -538.88, 985.75,
+            -90.59, -43.77, -56.81, 63.13,
+            -64.29, -98.93
+        ]
+    }
+    
+    df_sample = pd.DataFrame(sample_data)
+    df_sample.to_csv(file_path, index=False)
+    print(f"Created sample transactions file at {file_path}")
 
 # Interactive file input
 print("--- Personal Finance Analyzer ---")
 try:
-    file_path = input("Enter the path to your transactions CSV file (e.g., '../data/transactions.csv'): ")
+    DEFAULT_PATH = "data/sample_transactions.csv"
+    user_input = input(
+        f"Enter path to transactions CSV file\n"
+        f"[Press Enter to use '{DEFAULT_PATH}']: "
+    ).strip()
+    
+    file_path = user_input if user_input else DEFAULT_PATH
+    
+    # If using default path, create sample file if it doesn't exist
+    if file_path == DEFAULT_PATH:
+        create_sample_transactions(file_path)
+    
+    print(f"\nLoading transactions from: {file_path}")
     
     # Load the CSV file with encoding and delimiter error handling
     df = None
