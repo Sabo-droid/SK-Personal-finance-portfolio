@@ -1,0 +1,206 @@
+date,category,amount
+2021-09-01,Part-time Job,335.1
+2021-09-01,Food,-103.81
+2021-09-15,Part-time Job,236.85
+2021-09-15,Utilities,-43.77
+2021-09-22,Tuition,-1563.5
+2021-09-29,Allowance,63.13
+2021-09-29,Books,-90.59
+2021-10-06,Scholarship,985.85
+2021-10-06,Tuition,-1782.16
+2021-10-13,Food,-86.24
+2021-10-20,Allowance,187.0
+2021-10-27,Clothing,-175.22
+2021-10-27,Scholarship,473.33
+2021-11-03,Rent,-538.88
+2021-11-10,Scholarship,689.86
+2021-11-10,Food,-64.29
+2021-11-24,Rent,-434.27
+2021-12-01,Clothing,-98.93
+2021-12-08,Rent,-537.63
+2021-12-22,Utilities,-34.16
+2022-01-05,Clothing,-89.87
+2022-01-12,Utilities,-74.09
+2022-01-19,Allowance,76.44
+2022-01-19,Entertainment,-56.81
+2022-02-02,Clothing,-163.65
+2022-02-09,Part-time Job,457.35
+2022-02-16,Food,-61.07
+2022-03-02,Books,-154.38
+2022-03-09,Entertainment,-81.5
+2022-03-16,Utilities,-52.43
+2022-03-23,Clothing,-53.73
+2022-03-30,Rent,-410.19
+2022-04-06,Utilities,-43.04
+2022-04-20,Food,-52.93
+2022-04-27,Entertainment,-29.89
+2022-05-04,Books,-61.67
+2022-05-11,Clothing,-190.82
+2022-05-18,Tuition,-1113.76
+2022-05-18,Scholarship,766.92
+2022-05-25,Transportation,-63.37
+2022-06-01,Scholarship,375.4
+2022-06-01,Entertainment,-28.61
+2022-06-08,Transportation,-40.6
+2022-06-22,Allowance,179.64
+2022-06-22,Rent,-597.96
+2022-06-29,Allowance,100.91
+2022-06-29,Tuition,-1118.35
+2022-07-06,Utilities,-40.46
+2022-07-13,Tuition,-1660.94
+2022-07-27,Transportation,-22.57
+2022-08-03,Transportation,-98.84
+2022-08-10,Food,-58.84
+2022-08-31,Clothing,-159.61
+2022-09-07,Tuition,-1859.47
+2022-09-14,Part-time Job,214.21
+2022-09-14,Clothing,-137.12
+2022-09-21,Allowance,81.21
+2022-09-21,Entertainment,-26.42
+2022-09-28,Transportation,-59.17
+2022-10-05,Part-time Job,459.28
+2022-10-12,Rent,-521.47
+2022-10-19,Allowance,143.52
+2022-10-26,Tuition,-1308.82
+2022-10-26,Scholarship,221.92
+2022-11-09,Part-time Job,430.2
+2022-11-09,Transportation,-42.88
+2022-11-16,Allowance,53.52
+2022-11-30,Utilities,-70.75
+2022-12-07,Food,-65.57
+2022-12-14,Rent,-441.22
+2022-12-21,Tuition,-1669.49
+2022-12-28,Clothing,-167.14
+2023-01-04,Part-time Job,243.65
+2023-01-11,Utilities,-65.56
+2023-01-25,Part-time Job,455.85
+2023-01-25,Transportation,-25.63
+2023-02-01,Utilities,-49.65
+2023-02-08,Rent,-547.75
+2023-02-15,Allowance,58.72
+2023-02-22,Scholarship,396.91
+2023-02-22,Transportation,-98.18
+2023-03-01,Entertainment,-37.15
+2023-03-08,Entertainment,-79.73
+2023-03-15,Tuition,-1447.97
+2023-03-22,Clothing,-114.18
+2023-04-05,Utilities,-64.05
+2023-04-12,Allowance,114.61
+2023-04-19,Rent,-446.89
+2023-04-26,Entertainment,-31.2
+2023-05-10,Part-time Job,371.56
+2023-05-24,Food,-83.63
+2023-05-31,Allowance,166.07
+2023-05-31,Transportation,-22.26
+2023-06-07,Transportation,-94.26
+2023-06-14,Books,-123.3
+2023-06-21,Part-time Job,459.39
+2023-06-28,Entertainment,-58.39
+2023-07-05,Part-time Job,470.16
+2023-07-12,Tuition,-1060.75
+2023-07-19,Utilities,-72.73
+2023-07-26,Part-time Job,215.54
+2023-07-26,Transportation,-62.31
+2023-08-02,Books,-133.66
+2023-08-09,Tuition,-1005.44
+2023-08-23,Allowance,63.71
+2023-08-23,Transportation,-58.13
+2023-08-30,Clothing,-193.45
+2023-09-06,Allowance,173.58
+2023-09-13,Tuition,-1473.63
+2023-09-20,Part-time Job,499.3
+2023-09-27,Part-time Job,401.6
+2023-10-04,Part-time Job,367.08
+2023-10-04,Tuition,-1181.84
+2023-10-11,Tuition,-1954.87
+2023-10-11,Allowance,125.19
+2023-10-18,Food,-58.08
+2023-10-25,Part-time Job,279.36
+2023-10-25,Entertainment,-80.62
+2023-11-01,Books,-87.99
+2023-11-22,Utilities,-72.82
+2023-11-29,Scholarship,797.31
+2023-11-29,Entertainment,-64.07
+2023-12-20,Allowance,145.33
+2023-12-20,Clothing,-174.99
+2023-12-27,Scholarship,718.21
+2024-01-03,Clothing,-160.83
+2024-01-10,Food,-145.23
+2024-01-17,Books,-64.43
+2024-01-24,Rent,-514.25
+2024-01-31,Entertainment,-75.68
+2024-02-14,Utilities,-33.23
+2024-02-21,Utilities,-31.12
+2024-02-28,Clothing,-80.73
+2024-03-13,Part-time Job,393.45
+2024-03-13,Utilities,-38.72
+2024-03-27,Scholarship,631.51
+2024-03-27,Entertainment,-90.61
+2024-04-03,Allowance,107.86
+2024-04-03,Utilities,-65.8
+2024-04-10,Transportation,-75.15
+2024-04-10,Allowance,172.57
+2024-04-17,Transportation,-72.86
+2024-04-24,Clothing,-109.91
+2024-05-01,Rent,-599.88
+2024-05-08,Tuition,-1781.82
+2024-05-29,Part-time Job,408.57
+2024-05-29,Utilities,-34.63
+2024-06-12,Scholarship,608.98
+2024-06-19,Food,-59.26
+2024-06-26,Part-time Job,290.01
+2024-07-03,Books,-149.13
+2024-07-10,Allowance,61.36
+2024-07-10,Tuition,-1357.14
+2024-07-17,Food,-104.93
+2024-07-24,Transportation,-60.45
+2024-07-31,Scholarship,24.86
+2024-07-31,Clothing,-100.65
+2024-08-07,Rent,-581.62
+2024-08-14,Entertainment,-68.21
+2024-08-21,Tuition,-1643.37
+2024-08-28,Utilities,-72.05
+2024-09-04,Food,-114.32
+2024-09-11,Allowance,136.36
+2024-09-18,Scholarship,148.04
+2024-09-18,Utilities,-41.35
+2024-09-25,Transportation,-42.84
+2024-09-25,Allowance,155.56
+2024-10-02,Food,-133.25
+2024-10-09,Scholarship,322.89
+2024-10-09,Rent,-522.91
+2024-10-16,Food,-128.96
+2024-10-23,Utilities,-77.2
+2024-10-30,Rent,-488.17
+2024-11-06,Tuition,-1901.92
+2024-11-13,Allowance,105.69
+2024-11-13,Rent,-426.07
+2024-11-27,Part-time Job,353.0
+2024-12-11,Part-time Job,429.3
+2024-12-18,Books,-176.9
+2025-01-01,Part-time Job,212.8
+2025-01-08,Transportation,-96.93
+2025-01-15,Transportation,-31.46
+2025-01-22,Rent,-506.35
+2025-02-05,Clothing,-196.98
+2025-02-12,Scholarship,678.11
+2025-02-12,Entertainment,-95.04
+2025-02-19,Allowance,159.68
+2025-02-19,Books,-119.75
+2025-02-26,Clothing,-63.45
+2025-03-19,Clothing,-114.47
+2025-03-26,Tuition,-1870.05
+2025-04-02,Food,-148.43
+2025-04-09,Rent,-477.66
+2025-04-09,Part-time Job,426.32
+2025-04-23,Clothing,-120.48
+2025-04-30,Allowance,110.34
+2025-04-30,Food,-65.89
+2025-05-21,Allowance,60.31
+2025-05-21,Food,-147.48
+2025-05-28,Allowance,108.12
+2025-05-28,Rent,-448.11
+2025-06-04,Tuition,-1908.65
+2025-06-11,Entertainment,-81.7
+2025-06-18,Rent,-436.49
+2025-06-25,Books,-189.04
