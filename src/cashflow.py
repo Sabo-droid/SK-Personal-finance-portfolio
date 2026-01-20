@@ -2,6 +2,7 @@
 import pandas as pd
 from datetime import datetime
 import os
+from delayed_gratification import display_delayed_gratification_insights
 
 # Helper function to create sample transactions CSV if it doesn't exist
 def create_sample_transactions(file_path):
@@ -554,6 +555,9 @@ def main_menu():
             print(category_breakdown.to_string(index=False))
             total_expenses_breakdown = category_breakdown['Amount'].sum()
             print(f"\nTotal Expenses: ${total_expenses_breakdown:.2f}")
+            
+            # Display Delayed Gratification Insights
+            display_delayed_gratification_insights(df)
             
         elif choice == '0':
             print("\nThank you for using Personal Finance Analyzer. Goodbye!")

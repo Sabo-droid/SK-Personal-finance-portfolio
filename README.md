@@ -56,6 +56,30 @@ After loading data, the user is prompted into choosing from tools:
 - Shows the total amount spent per category and the percentage of total expenses.
 - Helps identify areas where money could be saved.
 
+6. Delayed Gratification Insights
+
+- Detects spending reductions in discretionary categories month-over-month.
+- Quantifies restraint: Calculates amounts "intentionally not spent."
+- Projects future value of savings at 6 months, 2 years, and 5 years.
+- Maps to meaningful rewards: Translates savings into student-relevant outcomes (emergency fund, travel, laptop, textbooks).
+- Encourages behavior change: Frames financial restraint as choices and trade-offs, not deprivation.
+
+**Example Insight:**
+```
+DELAYED GRATIFICATION INSIGHT: EATING OUT
+
+You chose not to spend $17.00 on Eating Out this month.
+This reflects a 26% reduction compared to last month.
+
+If this behavior continues:
+  In 6 months: ~$102.00
+  In 2 years: ~$408.00
+  In 5 years: ~$1,020.00
+
+This could fund:
+  📖 A trip to Bali!
+```
+
 After required output, different tool can be selected from the prompt. 
 
 
@@ -95,6 +119,77 @@ Select required tool from a range of options
 ### Typical workflow
 - Choose a file when prompted (or press Enter for sample data)
 - Use the interactive menu to view monthly summaries, check total savings, compute emergency runway, run scenario projections, or view category spending breakdowns
+
+## Delayed Gratification Insights: How It Works
+
+### The Three-Stage Process
+
+**Stage 1: Category Spending Trends**
+- Analyzes spending patterns across all discretionary and essential categories.
+- Compares previous month vs. current month spending per category.
+- Calculates absolute and percentage changes.
+
+**Stage 2: Delayed Gratification Detection**
+- Identifies categories with *discretionary* spending that *decreased* month-over-month.
+- Filters by minimum threshold: either $20+ reduction OR 10%+ reduction.
+- Qualifies reductions as intentional spending restraint (not circumstantial changes).
+
+**Stage 3: Future Value & Reward Mapping**
+- Projects monthly savings at three time horizons:
+  - 6 months (short-term goal)
+  - 24 months / 2 years (medium-term goal)
+  - 60 months / 5 years (long-term goal)
+- Maps projected values to student-relevant rewards:
+  - $3,000+: Full emergency fund buffer (3 months of rent)
+  - $1,500+: Major travel or flights
+  - $800+: New laptop or tablet
+  - $500+: Course materials & textbooks for semester
+  - $300+: Emergency buffer month
+  - $150+: Quality hobby investment
+  - $75+: Books or online courses
+
+### Design Principles
+
+✨ **No Shaming Language**
+- Frames spending reductions as choices, not restrictions.
+- Celebrates progress; avoids guilt or deprivation language.
+
+💡 **Focus on Future Freedom**
+- Emphasizes how saved money enables flexibility, opportunity, and resilience.
+- Connects short-term restraint to long-term security.
+
+🎯 **Counterfactual Reasoning**
+- Uses "money not spent" as the core insight.
+- Helps users understand the value of their behavioral choices.
+
+🔄 **Personalized to Student Life**
+- Reward mapping reflects real student priorities: emergency funds, travel, tech, education.
+
+### Why This Feature Matters
+
+This feature demonstrates several key engineering principles:
+
+- **Behavioral Economics**: Applies delay discounting and framing effects to encourage positive financial behavior.
+- **Time-Based Financial Modeling**: Projects cumulative impacts of behavioral changes.
+- **Human-Centered AI**: Designs insights to motivate without judgment or coercion.
+- **Real-World Decision Support**: Provides actionable feedback for students making financial trade-offs.
+
+### Testing the Feature
+
+Use the provided multi-month sample data to see the feature in action:
+
+```bash
+python src/cashflow.py
+# When prompted, enter: data/multi_month_transactions.csv
+# Select option 5 (Category Spending Breakdown)
+# Scroll down to see Delayed Gratification Insights
+```
+
+Or run the test suite directly:
+
+```bash
+python src/test_delayed_gratification.py
+```
 
 ## Assumptions & Limitations
 - Requires CSV input with at least the columns: `date`, `category`, `amount` (column names are case-insensitive and aliases are supported).
